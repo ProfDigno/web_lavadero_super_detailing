@@ -541,7 +541,7 @@ function calendarWhatsAppMessage(reservation) {
   const date = formatDate(reservation.fecha_reserva);
   const time = formatReservationTime(reservation.hora_reserva);
   const services = reservation.servicios || "Servicios reservados";
-  return `Hola ${reservation.cliente_nombre || ""}, te recordamos tu reserva en LAVADERO CENTRIA para el ${date} a las ${time}. Servicios: ${services}. Monto estimado: ${formatMoney(reservation.monto)}. ¡Te esperamos!`;
+  return `Hola ${reservation.cliente_nombre || ""}, te recordamos tu reserva en LAVADERO SUPER DETAILING para el ${date} a las ${time}. Servicios: ${services}. Monto estimado: ${formatMoney(reservation.monto)}. ¡Te esperamos!`;
 }
 
 function formatReservationTime(value) {
@@ -5603,6 +5603,6 @@ app.use((error, req, res, next) => {
 });
 
 app.listen(config.port, () => {
-  console.log(`Lavadero Centria listo en http://localhost:${config.port}`);
+  console.log(`Lavadero Super Detailing listo en http://localhost:${config.port}`);
   startTelegramBot();
 });

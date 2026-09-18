@@ -1,10 +1,10 @@
 @echo off
 setlocal
-title Crear acceso directo - LAVADERO CENTRIA
+title Crear acceso directo - LAVADERO SUPER DETAILING
 
 set "APP_DIR=%~dp0"
 set "TARGET=%APP_DIR%iniciar-lavadero.bat"
-set "SHORTCUT=%USERPROFILE%\Desktop\LAVADERO CENTRIA.lnk"
+set "SHORTCUT=%USERPROFILE%\Desktop\LAVADERO SUPER DETAILING.lnk"
 
 if not exist "%TARGET%" (
   echo No se encontro iniciar-lavadero.bat.

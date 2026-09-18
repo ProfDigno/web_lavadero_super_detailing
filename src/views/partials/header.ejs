@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><%= title %> - LAVADERO CENTRIA</title>
+  <title><%= title %> - LAVADERO SUPER DETAILING</title>
   <link rel="stylesheet" href="/css/styles.css?v=20260917-calendario-form">
 </head>
 <body class="<%= user ? 'app-page' : 'auth-page' %>">
   <% if (user) { %>
     <header class="topbar">
-      <a class="brand" href="/">LAVADERO CENTRIA</a>
+      <a class="brand" href="/">LAVADERO SUPER DETAILING</a>
       <form action="/logout" method="post">
         <span><%= user.nombre %></span>
         <button class="ghost" type="submit">Salir</button>
