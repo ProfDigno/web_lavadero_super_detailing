@@ -1,6 +1,6 @@
 @echo off
 setlocal
-title LAVADERO SUPER DETAILING
+title LAVADERO CENTRIA
 
 set "APP_DIR=%~dp0"
 set "APP_URL=http://localhost:3011"
@@ -8,7 +8,7 @@ set "APP_URL=http://localhost:3011"
 cd /d "%APP_DIR%"
 
 echo ========================================
-echo        LAVADERO SUPER DETAILING
+echo        LAVADERO CENTRIA
 echo ========================================
 echo.
 

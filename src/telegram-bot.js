@@ -3,9 +3,11 @@ const os = require("os");
 const path = require("path");
 const config = require("./config");
 const { query, withTransaction } = require("./db");
+const { sendTestNotificationToAll } = require("./telegram-reservation-notifications");
 
 const sessions = new Map();
 const SESSION_TTL_MS = 30 * 60 * 1000;
+let activeBot = null;
 
 function normalizePlate(value) {
   return String(value || "")
@@ -532,6 +534,14 @@ async function handleText(bot, msg) {
     }
     return send(bot, chatId, authorizationMessage());
   }
+  if (text === "/prueba_avisos") {
+    try {
+      const count = await sendTestNotificationToAll();
+      return send(bot, chatId, `Prueba enviada a ${count} celular${count === 1 ? "" : "es"} autorizado${count === 1 ? "" : "s"}.`);
+    } catch (error) {
+      return send(bot, chatId, `No se pudo enviar la prueba: ${error.message}`);
+    }
+  }
   if (text === "/start" || text === "/nuevo") {
     newSession(chatId);
     return send(bot, chatId, "Envia una foto del auto para comenzar un nuevo lavado.", { reply_markup: removeKeyboard() });
@@ -745,14 +755,15 @@ async function handleCallback(bot, callbackQuery) {
 }
 
 function startTelegramBot() {
-  if (!config.telegram.token) {
-    console.log("Telegram desactivado: falta TELEGRAM_BOT_TOKEN en .env");
+  if (!config.telegram.enabled || !config.telegram.token) {
+    console.log("Telegram desactivado: falta el token o la configuración está inactiva.");
     return null;
   }
   // Cargar la dependencia solo cuando Telegram esta realmente habilitado.
   // En instalaciones locales sin token, esto evita bloquear el arranque web.
   const TelegramBot = require("node-telegram-bot-api");
   const bot = new TelegramBot(config.telegram.token, { polling: true });
+  activeBot = bot;
   bot.on("photo", (msg) => handlePhoto(bot, msg).catch((error) => console.error("Telegram photo error:", error)));
   bot.on("message", (msg) => {
     if (msg.text) handleText(bot, msg).catch((error) => console.error("Telegram message error:", error));
@@ -763,4 +774,28 @@ function startTelegramBot() {
   return bot;
 }
 
-module.exports = { startTelegramBot };
+async function stopTelegramBot() {
+  const bot = activeBot;
+  activeBot = null;
+  if (!bot || typeof bot.stopPolling !== "function") return;
+  try {
+    await bot.stopPolling({ cancel: true });
+  } catch (error) {
+    console.error("No se pudo detener el bot de Telegram:", String(error.message || error).replace(config.telegram.token || "", "[TOKEN]"));
+  }
+}
+
+async function reloadTelegramBot() {
+  await stopTelegramBot();
+  const bot = startTelegramBot();
+  if (!bot) return null;
+  try {
+    await bot.getMe();
+  } catch (error) {
+    await stopTelegramBot();
+    throw new Error(`Telegram rechazó la configuración: ${String(error.message || error).replace(config.telegram.token || "", "[TOKEN]")}`);
+  }
+  return bot;
+}
+
+module.exports = { reloadTelegramBot, startTelegramBot, stopTelegramBot };

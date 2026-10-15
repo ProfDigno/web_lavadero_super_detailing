@@ -30,7 +30,7 @@ async function main() {
     where n.nspname = 'public' and c.relkind = 'r'
     order by c.relname
   `);
-  const chunks = ["-- Lavadero Super Detailing local database snapshot", "BEGIN;", "SET session_replication_role = replica;"];
+  const chunks = ["-- Lavadero Centria local database snapshot", "BEGIN;", "SET session_replication_role = replica;"];
   let totalRows = 0;
   for (const { table_name: table } of tables.rows) {
     const columns = await pool.query(`

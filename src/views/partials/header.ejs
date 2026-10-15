@@ -4,16 +4,23 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= title %> - LAVADERO SUPER DETAILING</title>
-  <link rel="stylesheet" href="/css/styles.css?v=20260917-calendario-form">
+  <link rel="stylesheet" href="/css/styles.css?v=20260920-telegram-config">
 </head>
 <body class="<%= user ? 'app-page' : 'auth-page' %>">
   <% if (user) { %>
     <header class="topbar">
       <a class="brand" href="/">LAVADERO SUPER DETAILING</a>
-      <form action="/logout" method="post">
-        <span><%= user.nombre %></span>
-        <button class="ghost" type="submit">Salir</button>
-      </form>
+      <div class="topbar-right">
+        <time class="system-clock" data-system-clock aria-label="Fecha y hora del sistema">
+          <span data-system-date>--/--/----</span>
+          <span aria-hidden="true">·</span>
+          <span data-system-time>--:--:--</span>
+        </time>
+        <form action="/logout" method="post">
+          <span><%= user.nombre %></span>
+          <button class="ghost" type="submit">Salir</button>
+        </form>
+      </div>
     </header>
     <button class="nav-toggle" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="main-navigation">
       <span class="nav-toggle-icon" aria-hidden="true"><span></span><span></span><span></span></span>
@@ -40,10 +47,14 @@
     <% const showFactura = canEvent('factura-ocultar'); %>
     <% const showFacturaLibre = canEvent('factura_libre-ocultar'); %>
     <% const showFacturaSend = canEvent('config_facturasend-ocultar'); %>
+    <% const showTelegramConfig = canEvent('telegram_config-ocultar') && userRoll === 'ADMINISTRADOR'; %>
     <% const showProductoCategoria = canEvent('producto_categoria-ocultar'); %>
     <% const showProducto = canEvent('producto-ocultar'); %>
     <% const showVenta = canEvent('venta-ocultar'); %>
     <% const showAnalisisVenta = canEvent('AnalisisVenta-ocultar'); %>
+    <% const showProveedor = canEvent('proveedor-ocultar'); %>
+    <% const showCompra = canEvent('compra-ocultar'); %>
+    <% const showAnalisisCompra = canEvent('AnalisisCompra-ocultar'); %>
     <% if (cajaMenuRestringido) { %>
     <nav class="nav" id="main-navigation" aria-label="Navegación principal">
       <% if (canEvent('cierre_caja-ocultar')) { %>
@@ -51,6 +62,15 @@
           <summary><span class="nav-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="14" rx="2"/><path d="M7 6V4h10v2m-9 7h8"/></svg></span>Caja</summary>
           <div class="nav-submenu">
             <a href="/caja-cierres"><span class="nav-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5M8 17h3"/></svg></span>Cierre de caja</a>
+          </div>
+        </details>
+      <% } %>
+      <% if (!cajaBloqueadaPorFecha && (showProveedor || showCompra)) { %>
+        <details class="nav-menu">
+          <summary><span class="nav-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7h18v13H3zM7 7V4h10v3M8 11h8M8 15h8"/></svg></span>Compra</summary>
+          <div class="nav-submenu">
+            <% if (showProveedor) { %><a href="/proveedores">Proveedor</a><% } %>
+            <% if (showCompra) { %><a href="/compras">Compra</a><% } %>
           </div>
         </details>
       <% } %>
@@ -122,6 +142,16 @@
           </div>
         </details>
       <% } %>
+      <% if (showProveedor || showCompra || showAnalisisCompra) { %>
+        <details class="nav-menu">
+          <summary><span class="nav-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 7h18v13H3zM7 7V4h10v3M8 11h8M8 15h8"/></svg></span>Compra</summary>
+          <div class="nav-submenu">
+            <% if (showProveedor) { %><a href="/proveedores">Proveedor</a><% } %>
+            <% if (showCompra) { %><a href="/compras">Compra</a><% } %>
+            <% if (showAnalisisCompra) { %><a href="/analisis-compras">Analisis de compra</a><% } %>
+          </div>
+        </details>
+      <% } %>
       <% if (showPersonal || showAnalisisPersonal || showVale || showComisiones) { %>
       <details class="nav-menu">
         <summary><span class="nav-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3"/><path d="M5 21a7 7 0 0 1 14 0M19 11a3 3 0 0 1 0 6"/></svg></span>Personal</summary>
@@ -170,6 +200,9 @@
         <div class="nav-submenu">
           <% if (showPagos) { %>
             <a href="/formas-pago"><span class="nav-item-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h4"/></svg></span>Pagos</a>
+          <% } %>
+          <% if (showTelegramConfig) { %>
+            <a href="/telegram/config">Telegram</a>
           <% } %>
         </div>
       </details>
